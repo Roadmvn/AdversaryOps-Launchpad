@@ -38,12 +38,12 @@ Techniques impliquant une interaction directe avec les systèmes cibles.
 
 ---
 
-### 🛠️ [_Tools/](_Tools/) - Outils Spécialisés
-Guides pratiques des outils essentiels pour la reconnaissance terrain.
+### 🛠️ [Tools-Reconnaissance/](Tools-Reconnaissance/) - Outils Spécialisés
+**Guides opérationnels des outils terrain**
 
-- **[Nmap.md](_Tools/Nmap.md)** : Guide terrain optimisé ↔️ [Référence complète](../08-Cours/04-Outils_Généraux/Nmap.md)
-- **[Masscan.md](_Tools/Masscan.md)** : Utilisation pratique pour reconnaissance rapide
-- **[Amass.md](_Tools/Amass.md)** : Découverte de subdomains et OSINT
+- **[Nmap.md](Tools-Reconnaissance/Nmap.md)** : Guide terrain optimisé ↔️ [Référence complète](../08-Cours/04-Outils_Généraux/Nmap.md)
+- **[Masscan.md](Tools-Reconnaissance/Masscan.md)** : Utilisation pratique pour reconnaissance rapide
+- **[Amass.md](Tools-Reconnaissance/Amass.md)** : Découverte de subdomains et OSINT
 
 ## 🚀 Progression recommandée
 
@@ -51,13 +51,13 @@ Guides pratiques des outils essentiels pour la reconnaissance terrain.
 1. **Commencer par la théorie** : [📚 08-Cours/02-Réseaux/](../08-Cours/02-Réseaux/)
 2. **Reconnaissance passive** : [OSINT/Whois.md](Passive/OSINT/Whois.md)
 3. **Premier scan** : [Active/Discovery/ICMP_PingSweep.md](Active/Discovery/ICMP_PingSweep.md)
-4. **Outils de base** : [_Tools/Nmap.md](_Tools/Nmap.md)
+4. **Outils de base** : [Tools-Reconnaissance/Nmap.md](Tools-Reconnaissance/Nmap.md)
 
 ### 🟡 Niveau Intermédiaire
 1. **Techniques OSINT avancées** : [Google_Dorking.md](Passive/OSINT/Google_Dorking.md) + [Shodan_Censys.md](Passive/OSINT/Shodan_Censys.md)
 2. **Scanning méthodique** : [Port-Scanning/Nmap_Bases.md](Active/Port-Scanning/Nmap_Bases.md)
 3. **Analyse experte** : [Analyse_Résultats.md](Active/Port-Scanning/Analyse_Résultats.md)
-4. **Automation** : [_Tools/Amass.md](_Tools/Amass.md)
+4. **Automation** : [Tools-Reconnaissance/Amass.md](Tools-Reconnaissance/Amass.md)
 
 ### 🔴 Niveau Avancé
 1. **Scanning à grande échelle** : [Masscan_Rapide.md](Active/Port-Scanning/Masscan_Rapide.md)

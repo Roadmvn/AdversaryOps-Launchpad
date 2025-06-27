@@ -360,3 +360,105 @@ echo "[+] Results saved in ${TARGET}_ftp_enum/"
 
 ---
 *Cette section couvre l'énumération FTP complète. Pour l'exploitation des vulnérabilités FTP, voir la section 02-Exploitation/Réseaux/*
+
+## Énumération FTP
+
+## Objectif
+Découvrir les accès anonymes, les fichiers sensibles, et les failles potentielles sur un serveur FTP.
+
+---
+
+## Commandes essentielles et explications
+
+### 1. Connexion anonyme
+```bash
+ftp target.com
+```
+- **ftp** : Client FTP en ligne de commande.
+- **Astuce débutant** : Quand il demande un login, essaye "anonymous" comme utilisateur et une adresse mail bidon comme mot de passe.
+- **Exemple de sortie** :
+```
+Name (target.com:root): anonymous
+Password: test@test.com
+230 Login successful.
+ftp> ls
+```
+- **À surveiller** : Accès autorisé sans mot de passe, fichiers listés.
+
+### 2. Listing des fichiers et téléchargement
+```bash
+ls
+get fichier.txt
+```
+- **ls** : Liste les fichiers et dossiers.
+- **get** : Télécharge un fichier.
+- **Astuce** : Chercher des fichiers de config, des backups, des scripts.
+
+### 3. Enumération automatisée avec Nmap
+```bash
+nmap -p 21 --script ftp-anon,ftp-bounce,ftp-syst target.com
+```
+- **ftp-anon** : Teste l'accès anonyme.
+- **ftp-bounce** : Vérifie si le serveur peut être utilisé pour rebondir sur d'autres machines.
+- **ftp-syst** : Récupère des infos sur le système FTP.
+- **Exemple de sortie** :
+```
+| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+| ftp-syst: 
+|   STAT: FTP server status:
+|   Connected to 192.168.1.10
+|   TYPE: ASCII
+```
+- **À surveiller** : Accès anonyme, possibilité de rebond, infos système révélées.
+
+---
+
+## Conseils pour débutants
+- Toujours tester l'accès "anonymous" avant d'essayer des credentials.
+- Chercher des fichiers cachés ou oubliés (backups, .htaccess, scripts).
+- Utiliser Nmap pour automatiser la détection de failles FTP.
+- Lire la documentation de chaque outil pour découvrir des options avancées.
+
+---
+
+## Pour aller plus loin
+- [PayloadsAllTheThings - FTP](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources/FTP%20Methodology)
+- [Nmap FTP NSE Scripts](https://nmap.org/nsedoc/categories/ftp.html)
+
+## 🗂️ Workflow d'énumération FTP
+1. Scan du port 21 (Nmap)
+   ↓
+2. Banner grabbing et détection de version (nc, nmap -sV, telnet)
+   ↓
+3. Test d'accès anonyme (ftp, nmap NSE, Metasploit)
+   ↓
+4. Enumération des utilisateurs (hydra, medusa, Metasploit)
+   ↓
+5. Exploration des répertoires et fichiers sensibles
+   ↓
+6. Recherche de vulnérabilités par version
+   ↓
+7. Extraction et analyse des fichiers téléchargés
+
+## 🛡️ Conseils OPSEC
+- Ne pas abuser des tentatives de connexion pour éviter le bannissement.
+- Privilégier les tests anonymes avant d'utiliser des credentials réels.
+- Ne jamais uploader de fichier sans autorisation.
+- Utiliser des délais entre les tentatives de brute force.
+
+## ⚠️ Erreurs fréquentes
+- Oublier de tester l'accès anonyme (souvent ouvert !)
+- Ne pas vérifier les permissions d'écriture
+- Lancer des scans trop agressifs qui déclenchent des alertes
+- Négliger les fichiers cachés ou de backup
+
+## 💡 Astuces
+- Utiliser lftp pour automatiser le téléchargement de tout un répertoire
+- Croiser les résultats de plusieurs outils (ftp, nmap, Metasploit)
+- Tester les credentials trouvés sur d'autres services
+- Scripter la recherche de fichiers sensibles (*.txt, *.config, *.sql)
+
+## 🔗 Pour aller plus loin
+- [PayloadsAllTheThings - FTP](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources/FTP%20Methodology)
+- [HackTricks - FTP](https://book.hacktricks.xyz/pentesting/pentesting-ftp)
+- [SecLists - Wordlists FTP](https://github.com/danielmiessler/SecLists/tree/master/Usernames)

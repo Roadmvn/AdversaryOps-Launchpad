@@ -40,7 +40,7 @@ La sécurité cloud couvre l'évaluation des infrastructures et services cloud m
 - **Network_Policies.md** - Tests des politiques réseau
 - **Secrets_Management.md** - Gestion des secrets
 
-### _Tools/
+### Tools-Reconnaissance/
 - **ScoutSuite.md** - Audit multi-cloud
 - **Prowler.md** - Audit de sécurité AWS
 - **CloudMapper.md** - Cartographie cloud

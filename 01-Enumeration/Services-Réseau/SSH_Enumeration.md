@@ -432,4 +432,110 @@ echo "[+] Results saved in ${TARGET}_ssh_enum/"
 - Arrêter si protections détectées
 
 ---
-*Cette section couvre l'énumération SSH complète. Pour l'exploitation des vulnérabilités SSH, voir la section 02-Exploitation/Réseaux/* 
+*Cette section couvre l'énumération SSH complète. Pour l'exploitation des vulnérabilités SSH, voir la section 02-Exploitation/Réseaux/*
+
+## Énumération SSH
+
+## Objectif
+Identifier la version du service SSH, les utilisateurs potentiels, et tester les accès faibles ou mal configurés.
+
+---
+
+## Commandes essentielles et explications
+
+### 1. Banner grabbing (récupération de la bannière)
+```bash
+nc target.com 22
+```
+- **nc** : Netcat, permet de se connecter à un port réseau.
+- **À quoi ça sert ?** Affiche la bannière SSH (version, parfois OS ou infos sensibles).
+- **Exemple de sortie** :
+```
+SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.8
+```
+- **À surveiller** : Version obsolète, infos sur l'OS, messages personnalisés.
+
+### 2. Détection de version avec Nmap
+```bash
+nmap -sV -p 22 target.com
+```
+- **-sV** : Détecte la version du service.
+- **-p 22** : Spécifie le port SSH.
+- **Exemple de sortie** :
+```
+22/tcp open  ssh  OpenSSH 7.2p2 Ubuntu 4ubuntu2.8
+```
+- **À surveiller** : Version vulnérable, service inattendu sur le port 22.
+
+### 3. Énumération des utilisateurs (si vulnérable)
+```bash
+hydra -L users.txt -P passwords.txt ssh://target.com
+```
+- **hydra** : Outil de bruteforce pour tester des combinaisons utilisateurs/mots de passe.
+- **-L** : Fichier de noms d'utilisateurs.
+- **-P** : Fichier de mots de passe.
+- **Astuce débutant** : Utiliser des listes courtes pour ne pas se faire bloquer.
+
+### 4. Test d'authentification par clé
+```bash
+ssh-keyscan target.com
+```
+- **ssh-keyscan** : Récupère la clé publique SSH du serveur.
+- **À quoi ça sert ?** Vérifier si la clé change (signe d'attaque Man-in-the-Middle), ou préparer des attaques avancées.
+- **Exemple de sortie** :
+```
+target.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAr...
+```
+
+---
+
+## Conseils pour débutants
+- Toujours commencer par la détection de version avant de tenter un bruteforce.
+- Ne pas insister sur le bruteforce : risque de blocage ou d'alerte.
+- Vérifier la politique de connexion (bannière, délai, nombre d'essais autorisés).
+- Lire la documentation de chaque outil pour découvrir des options avancées.
+
+---
+
+## Pour aller plus loin
+- [PayloadsAllTheThings - SSH](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources/SSH%20Methodology)
+- [Hydra](https://github.com/vanhauser-thc/thc-hydra)
+- [Nmap SSH NSE Scripts](https://nmap.org/nsedoc/categories/ssh.html)
+
+## 🗂️ Workflow d'énumération SSH
+1. Scan du port 22 (Nmap)
+   ↓
+2. Banner grabbing et détection de version (nc, nmap -sV, ssh)
+   ↓
+3. Enumération des utilisateurs (Metasploit, brute force, timing attack)
+   ↓
+4. Test d'authentification par credentials par défaut/faibles
+   ↓
+5. Recherche de clés SSH exposées ou réutilisées
+   ↓
+6. Recherche de vulnérabilités par version
+   ↓
+7. Analyse et exploitation des accès obtenus
+
+## 🛡️ Conseils OPSEC
+- Limiter le nombre de tentatives de connexion pour éviter le bannissement.
+- Privilégier les tests passifs avant les attaques actives.
+- Ne jamais utiliser de credentials réels sans autorisation.
+- Utiliser des délais entre les tentatives de brute force.
+
+## ⚠️ Erreurs fréquentes
+- Oublier de tester les credentials par défaut
+- Ne pas vérifier la présence de clés SSH publiques exposées
+- Lancer des scans trop agressifs qui déclenchent des alertes
+- Négliger les comptes de service ou d'administration
+
+## 💡 Astuces
+- Utiliser Metasploit pour automatiser l'énumération des utilisateurs
+- Croiser les résultats de plusieurs outils (hydra, nmap, Metasploit)
+- Tester les credentials trouvés sur d'autres services
+- Scripter la recherche de clés SSH dans les répertoires publics
+
+## 🔗 Pour aller plus loin
+- [PayloadsAllTheThings - SSH](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources/SSH%20Methodology)
+- [HackTricks - SSH](https://book.hacktricks.xyz/pentesting/pentesting-ssh)
+- [SecLists - Wordlists SSH](https://github.com/danielmiessler/SecLists/tree/master/Usernames) 

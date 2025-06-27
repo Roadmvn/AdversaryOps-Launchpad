@@ -37,30 +37,40 @@ AdversaryOps-Launchpad/
 ### 1. Navigation dans la structure
 Chaque dossier principal contient :
 - **Techniques spécialisées** organisées par sous-catégories
-- **Dossier `_Tools/`** avec les guides d'outils spécifiques
+- **Dossier `Tools-Reconnaissance/`** avec les guides d'outils spécifiques
 - **README.md** local avec navigation contextuelle
 
 ### 2. Progression recommandée
-```mermaid
-graph TD
-    A[12-Environment-Setup] --> B[11-Cours]
-    B --> C[00-Reconnaissance]
-    C --> D[01-Enumeration]
-    D --> E[02-Exploitation]
-    E --> F[03-Post-Exploitation]
-    F --> G[04-Privilege-Escalation]
-    G --> H[05-Red-Team]
-    H --> I[06-Wireless-Security]
-    I --> J[07-Social-Engineering]
-    J --> K[08-Cloud-Security]
-    K --> L[09-Reporting-Documentation]
-    
-    M[10-Labs-Pratiques] --> C
-    M --> D
-    M --> E
-    
-    N[13-Methodology-Guides] --> A
-```
+
+Schéma textuel de la progression :
+
+12-Environment-Setup
+   ↓
+11-Cours
+   ↓
+00-Reconnaissance
+   ↓
+01-Enumeration
+   ↓
+02-Exploitation
+   ↓
+03-Post-Exploitation
+   ↓
+04-Privilege-Escalation
+   ↓
+05-Red-Team
+   ↓
+06-Wireless-Security
+   ↓
+07-Social-Engineering
+   ↓
+08-Cloud-Security
+   ↓
+09-Reporting-Documentation
+
+(En parallèle :)
+10-Labs-Pratiques → 00-Reconnaissance, 01-Enumeration, 02-Exploitation
+13-Methodology-Guides → 12-Environment-Setup
 
 ## 📚 Modules principaux
 

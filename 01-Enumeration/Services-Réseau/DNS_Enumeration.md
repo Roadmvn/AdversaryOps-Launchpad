@@ -36,6 +36,19 @@ intranet.entreprise-cible.com, vpn.entreprise-cible.com
 4. **Trouver les serveurs mail** - MX records
 5. **Zone transfer** - Si mal configuré
 
+## 🗂️ Workflow d'énumération DNS
+1. Résolution de base (nslookup, dig)
+   ↓
+2. Recherche des enregistrements principaux (A, AAAA, MX, NS, TXT, SOA)
+   ↓
+3. Découverte de sous-domaines (dnsrecon, sublist3r, gobuster dns, amass)
+   ↓
+4. Test de zone transfer (AXFR)
+   ↓
+5. Reverse DNS et cache snooping
+   ↓
+6. Analyse des résultats et corrélation avec d'autres services
+
 ## 🔍 Phase 1 : Reconnaissance DNS de Base
 
 ### Commandes DNS Essentielles
@@ -370,3 +383,99 @@ echo "[+] Results saved in ${DOMAIN}_dns_enum/"
 
 ---
 *Cette section couvre l'énumération DNS complète. Pour l'exploitation des vulnérabilités DNS, voir la section 02-Exploitation/Réseaux/*
+
+## Énumération DNS
+
+## Objectif
+Découvrir des sous-domaines, des serveurs cachés, et des informations sensibles via le protocole DNS.
+
+---
+
+## Commandes essentielles et explications
+
+### 1. Recherche d'enregistrements DNS classiques
+```bash
+dig target.com ANY
+```
+- **dig** : Outil pour interroger les serveurs DNS.
+- **ANY** : Demande tous les types d'enregistrements connus (A, MX, TXT, etc.).
+- **Exemple de sortie** :
+```
+target.com.   3600 IN A 192.168.1.10
+target.com.   3600 IN MX mail.target.com.
+target.com.   3600 IN TXT "v=spf1 include:_spf.google.com ~all"
+```
+- **À surveiller** : IP publiques, serveurs mail, enregistrements TXT (parfois des clés ou infos internes).
+
+### 2. Découverte de sous-domaines
+```bash
+for sub in www mail vpn dev; do dig $sub.target.com +short; done
+```
+- **for sub ...** : Boucle pour tester des sous-domaines courants.
+- **+short** : Affiche uniquement l'IP ou la réponse utile.
+- **Astuce débutant** : Utiliser des wordlists (SecLists) pour automatiser la recherche.
+
+### 3. Transfert de zone (si mal configuré)
+```bash
+dig AXFR target.com @ns1.target.com
+```
+- **AXFR** : Demande un transfert complet de la zone DNS (rarement autorisé, mais jackpot si ça marche).
+- **@ns1.target.com** : Spécifie le serveur DNS à interroger.
+- **Exemple de sortie** :
+```
+; Transfer failed.
+; ou
+mail.target.com.   3600 IN A 192.168.1.20
+vpn.target.com.    3600 IN A 192.168.1.30
+```
+- **À surveiller** : Liste complète des machines et sous-domaines si le transfert réussit.
+
+### 4. Brute-force de sous-domaines avec dnsenum
+```bash
+dnsenum target.com
+```
+- **dnsenum** : Outil automatisé pour trouver des sous-domaines, serveurs de messagerie, etc.
+- **Exemple de sortie** :
+```
+Found host: dev.target.com
+Found host: intranet.target.com
+```
+- **Astuce** : Tester aussi avec `dnsrecon`, `fierce`, ou des scripts personnalisés.
+
+---
+
+## Conseils pour débutants
+- Toujours commencer par les requêtes simples (dig, nslookup) avant d'automatiser.
+- Tester le transfert de zone sur tous les serveurs DNS trouvés.
+- Utiliser des wordlists pour maximiser la découverte de sous-domaines.
+- Lire la documentation de chaque outil pour découvrir des options avancées.
+
+---
+
+## Pour aller plus loin
+- [PayloadsAllTheThings - DNS](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources/DNS%20Methodology)
+- [SecLists - DNS wordlists](https://github.com/danielmiessler/SecLists/tree/master/Discovery/DNS)
+- [dnsenum](https://github.com/fwaeytens/dnsenum)
+
+## 🛡️ Conseils OPSEC
+- Ne pas abuser des requêtes sur les serveurs DNS publics (risque de blocage ou d'alerte).
+- Privilégier les méthodes passives avant les scans actifs.
+- Tester le transfert de zone uniquement si autorisé.
+- Utiliser des wordlists adaptées à la cible pour éviter le bruit.
+
+## ⚠️ Erreurs fréquentes
+- Oublier de tester le transfert de zone (AXFR)
+- Négliger les enregistrements TXT riches en informations
+- Ne pas vérifier les sous-domaines générés dynamiquement
+- Lancer des scans trop larges sans filtrer les résultats
+
+## 💡 Astuces
+- Utiliser crt.sh et amass pour découvrir des sous-domaines via les certificats
+- Croiser les résultats de plusieurs outils pour plus de couverture
+- Automatiser la résolution inverse sur des plages d'IP
+- Scripter l'analyse des résultats pour détecter les patterns
+
+## 🔗 Pour aller plus loin
+- [PayloadsAllTheThings - DNS](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources/DNS%20Methodology)
+- [HackTricks - DNS](https://book.hacktricks.xyz/pentesting/pentesting-dns)
+- [SecLists - Wordlists DNS](https://github.com/danielmiessler/SecLists/tree/master/Discovery/DNS)

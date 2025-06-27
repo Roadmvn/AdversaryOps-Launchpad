@@ -260,32 +260,34 @@ Ce glossaire définit **TOUS les termes techniques Windows** que vous rencontrer
 
 ## 📊 Schéma Récapitulatif
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        ÉCOSYSTÈME WINDOWS                           │
-│                                                                     │
-│  ┌─────────────────────┐         ┌─────────────────────────────────┐ │
-│  │    CLIENT WINDOWS   │         │       DOMAIN CONTROLLER        │ │
-│  │                     │         │                                 │ │
-│  │ ┌─────────────────┐ │         │ ┌─────────────────────────────┐ │ │
-│  │ │   PROCESSES     │ │         │ │     ACTIVE DIRECTORY        │ │ │
-│  │ │                 │ │         │ │                             │ │ │
-│  │ │ • winlogon.exe  │ │ Kerberos│ │ • Users                     │ │ │
-│  │ │ • lsass.exe     │◄─────────┼─┤ • Groups                    │ │ │
-│  │ │ • csrss.exe     │ │         │ │ • Computers                 │ │ │
-│  │ └─────────────────┘ │         │ │ • GPOs                      │ │ │
-│  │                     │         │ └─────────────────────────────┘ │ │
-│  │ ┌─────────────────┐ │         │                                 │ │
-│  │ │    REGISTRY     │ │         │ ┌─────────────────────────────┐ │ │
-│  │ │                 │ │         │ │        SERVICES             │ │ │
-│  │ │ • HKLM\SAM      │ │         │ │                             │ │ │
-│  │ │ • HKLM\SYSTEM   │ │         │ │ • DNS                       │ │ │
-│  │ │ • HKLM\SOFTWARE │ │         │ │ • DHCP                      │ │ │
-│  │ └─────────────────┘ │         │ │ • ADCS                      │ │ │
-│  └─────────────────────┘         │ └─────────────────────────────┘ │ │
-│                                  └─────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────┘
-```
+Schéma textuel de l'écosystème Windows :
+
+1. CLIENT WINDOWS
+   ├── PROCESSES :
+   │     • winlogon.exe
+   │     • lsass.exe
+   │     • csrss.exe
+   ├── REGISTRY :
+   │     • HKLM\SAM
+   │     • HKLM\SYSTEM
+   │     • HKLM\SOFTWARE
+
+2. DOMAIN CONTROLLER
+   ├── ACTIVE DIRECTORY :
+   │     • Users
+   │     • Groups
+   │     • Computers
+   │     • GPOs
+   ├── SERVICES :
+   │     • DNS
+   │     • DHCP
+   │     • ADCS
+
+Relations principales :
+- Les processus du client interagissent avec le contrôleur de domaine via Kerberos.
+- Le registre stocke les informations critiques locales.
+- Active Directory centralise la gestion des identités et des politiques.
+- Les services réseau (DNS, DHCP, ADCS) assurent la connectivité et la gestion des ressources.
 
 ---
 

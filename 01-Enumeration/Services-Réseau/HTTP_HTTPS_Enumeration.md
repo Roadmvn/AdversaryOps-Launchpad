@@ -405,3 +405,127 @@ echo "Results saved in ${TARGET}_web_enum/"
 
 ---
 *Cette section couvre l'énumération HTTP/HTTPS complète. Pour l'exploitation des vulnérabilités trouvées, voir la section 02-Exploitation/Web/* 
+
+## Objectif
+Découvrir les pages cachées, les technologies utilisées, et les vulnérabilités potentielles sur un site web.
+
+---
+
+## Commandes essentielles et explications
+
+### 1. Identification du serveur web
+```bash
+curl -I http://target.com
+```
+- **curl -I** : Envoie une requête HEAD pour afficher uniquement les en-têtes HTTP.
+- **À quoi ça sert ?** Permet de voir le type de serveur (Apache, Nginx, IIS…), la version, et parfois des infos sensibles (X-Powered-By).
+- **Exemple de sortie** :
+```
+HTTP/1.1 200 OK
+Server: Apache/2.4.7 (Ubuntu)
+X-Powered-By: PHP/5.6.4
+```
+- **À surveiller** : Version obsolète, infos sur le langage (PHP, ASP.NET…), présence de cookies spéciaux.
+
+### 2. Fuzzing de répertoires cachés
+```bash
+gobuster dir -u http://target.com -w /usr/share/seclists/Discovery/Web-Content/common.txt -x php,html,txt
+```
+- **gobuster dir** : Cherche des dossiers/fichiers cachés sur le site.
+- **-u** : URL cible.
+- **-w** : Wordlist utilisée (ici, une liste de mots courants).
+- **-x** : Extensions à tester (.php, .html, .txt).
+- **Exemple de sortie** :
+```
+/admin (Status: 301)
+/backup (Status: 200)
+/index.php (Status: 200)
+```
+- **À surveiller** : Dossiers d'admin, backups, fichiers sensibles.
+- **Astuce débutant** : Tester aussi avec d'autres wordlists (SecLists, Dirbuster, etc.).
+
+### 3. Scan de vulnérabilités web
+```bash
+nikto -h http://target.com
+```
+- **nikto -h** : Scanner de vulnérabilités web basiques.
+- **À quoi ça sert ?** Repère les failles connues, fichiers dangereux, options de configuration faibles.
+- **Exemple de sortie** :
+```
++ Server: Apache/2.4.7 (Ubuntu)
++ The X-XSS-Protection header is not defined. This could allow XSS attacks.
++ /phpinfo.php: Output from the phpinfo() function was found.
+```
+- **À surveiller** : Fichiers oubliés, headers manquants, versions vulnérables.
+
+### 4. Énumération avec Nmap
+```bash
+nmap --script http-enum,http-headers target.com -p 80
+```
+- **--script http-enum,http-headers** : Utilise des scripts Nmap pour lister les répertoires et analyser les en-têtes HTTP.
+- **-p 80** : Spécifie le port (80 pour HTTP, 443 pour HTTPS).
+- **Exemple de sortie** :
+```
+PORT   STATE SERVICE
+80/tcp open  http
+| http-enum: 
+|   /admin/: Possible admin folder
+|   /test/: Test page
+| http-headers: 
+|   Server: Apache/2.4.7 (Ubuntu)
+|   X-Powered-By: PHP/5.6.4
+```
+- **À surveiller** : Dossiers cachés, headers révélateurs, pages de test.
+
+---
+
+## Conseils pour débutants
+- Toujours adapter les wordlists et les extensions selon la cible.
+- Tester en HTTPS si le site le propose (changer le port en 443).
+- Ne pas se limiter à un seul outil : combiner curl, gobuster, nikto, Nmap pour une vue complète.
+- Lire la documentation de chaque outil pour découvrir des options avancées.
+
+---
+
+## Pour aller plus loin
+- [SecLists - Wordlists pour fuzzing](https://github.com/danielmiessler/SecLists)
+- [OWASP DirBuster](https://www.owasp.org/index.php/Category:OWASP_DirBuster_Project)
+- [Nmap HTTP NSE Scripts](https://nmap.org/nsedoc/categories/http.html)
+
+## 🗂️ Workflow d'énumération HTTP/HTTPS
+1. Scan des ports 80/443 (Nmap)
+   ↓
+2. Banner grabbing et détection de technologies (curl, whatweb, wappalyzer)
+   ↓
+3. Fuzzing de répertoires et fichiers (gobuster, ffuf, dirb)
+   ↓
+4. Recherche de fichiers sensibles (robots.txt, .env, config.php, backup)
+   ↓
+5. Scan de vulnérabilités (nikto, nmap NSE, Metasploit)
+   ↓
+6. Analyse manuelle du contenu et des paramètres
+   ↓
+7. Extraction d'informations et préparation à l'exploitation
+
+## 🛡️ Conseils OPSEC
+- Limiter le nombre de requêtes par seconde pour éviter d'être détecté (rate limiting).
+- Utiliser des user-agents variés pour éviter d'être blacklisté.
+- Privilégier les scans passifs avant les scans actifs.
+- Ne jamais tester des exploits destructeurs sans autorisation.
+
+## ⚠️ Erreurs fréquentes
+- Oublier de vérifier robots.txt et sitemap.xml
+- Ne pas tester les extensions de fichiers courantes (.php, .bak, .old, .zip)
+- Lancer des scans trop agressifs qui saturent le serveur
+- Négliger les sous-domaines et les virtual hosts
+
+## 💡 Astuces
+- Utiliser ffuf pour le fuzzing rapide et paramétrique
+- Croiser les résultats de plusieurs outils (gobuster, dirb, ffuf)
+- Tester les credentials trouvés sur les interfaces d'admin
+- Automatiser la collecte de screenshots avec aquatone ou gowitness
+
+## 🔗 Pour aller plus loin
+- [PayloadsAllTheThings - Web](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources/Web%20Methodology)
+- [HackTricks - Web](https://book.hacktricks.xyz/pentesting-web)
+- [SecLists - Wordlists Web](https://github.com/danielmiessler/SecLists/tree/master/Discovery/Web-Content)

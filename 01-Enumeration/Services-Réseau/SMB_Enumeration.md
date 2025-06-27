@@ -400,3 +400,121 @@ echo "[+] Results saved in ${TARGET}_smb_enum/"
 
 ---
 *Cette section couvre l'énumération SMB complète. Pour l'exploitation des vulnérabilités SMB, voir la section 02-Exploitation/Réseaux/* 
+
+# Énumération SMB/NetBIOS
+
+## Objectif
+Lister les partages, utilisateurs, et informations système sur un serveur Windows/Linux via SMB.
+
+---
+
+## Commandes essentielles et explications
+
+### 1. Énumération complète avec enum4linux
+```bash
+enum4linux -a target.com
+```
+- **-a** : Lance tous les modules d'énumération.
+- **À quoi ça sert ?** Récupère les partages, utilisateurs, groupes, infos système.
+- **Exemple de sortie** :
+```
+[+] Enumerating users using RID cycling...
+user: administrator
+user: guest
+[+] Enumerating shares...
+share: IPC$
+share: ADMIN$
+```
+- **À surveiller** : Utilisateurs présents, partages accessibles, infos sur le domaine.
+
+### 2. Listage des partages avec smbclient
+```bash
+smbclient -L //target.com -N
+```
+- **-L** : Liste les partages disponibles.
+- **-N** : Pas d'authentification (anonyme).
+- **Exemple de sortie** :
+```
+Sharename       Type      Comment
+---------       ----      -------
+IPC$            IPC       IPC Service
+ADMIN$          Disk      Remote Admin
+public          Disk      Public Share
+```
+- **À surveiller** : Partages accessibles sans mot de passe, partages "public", "backup", etc.
+
+### 3. Test d'accès à un partage
+```bash
+smbclient //target.com/public -N
+```
+- Permet de naviguer dans le partage "public" si accessible.
+- **Astuce débutant** : Tester tous les partages listés précédemment.
+
+### 4. Énumération avec Nmap
+```bash
+nmap --script smb-enum-shares,smb-enum-users target.com
+```
+- Utilise les scripts Nmap pour lister les partages et les utilisateurs SMB.
+- **Exemple de sortie** :
+```
+| smb-enum-shares: 
+|   account_used: guest
+|   \public: READ, WRITE
+| smb-enum-users: 
+|   administrator
+|   guest
+```
+- **À surveiller** : Partages en lecture/écriture, comptes invités.
+
+---
+
+## Conseils pour débutants
+- Toujours tester l'accès anonyme avant d'essayer des credentials.
+- Attention aux partages "public", "backup", "old", souvent oubliés mais accessibles.
+- Utiliser Nmap pour compléter enum4linux et smbclient.
+- Lire la documentation de chaque outil pour découvrir des options avancées.
+
+---
+
+## Pour aller plus loin
+- [SMBMap](https://github.com/ShawnDEvans/smbmap)
+- [Nmap SMB NSE Scripts](https://nmap.org/nsedoc/categories/smb.html)
+- [PayloadsAllTheThings - SMB](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources/SMB%20Methodology)
+
+## 🗂️ Workflow d'énumération SMB
+1. Scan des ports 139/445 (Nmap)
+   ↓
+2. Banner grabbing et détection de version (nmap -sV, smbclient)
+   ↓
+3. Enumération des partages (smbclient -L, enum4linux, smbmap)
+   ↓
+4. Enumération des utilisateurs (enum4linux, rpcclient)
+   ↓
+5. Test d'accès anonyme ou guest
+   ↓
+6. Recherche de vulnérabilités (NSE, Metasploit)
+   ↓
+7. Extraction de fichiers ou d'informations sensibles
+
+## 🛡️ Conseils OPSEC
+- Limiter le nombre de requêtes pour éviter d'être détecté par les IDS/IPS.
+- Privilégier les requêtes anonymes avant d'utiliser des credentials réels.
+- Ne jamais uploader de fichier sans autorisation explicite.
+- Utiliser des plages horaires creuses pour minimiser l'impact.
+
+## ⚠️ Erreurs fréquentes
+- Oublier de tester l'accès anonyme (souvent ouvert !)
+- Ne pas vérifier les permissions d'écriture sur les partages
+- Confondre les partages "IPC$" (administratif) et les partages utilisateurs réels
+- Lancer des scans trop agressifs qui déclenchent des alertes
+
+## 💡 Astuces
+- Utiliser smbmap pour automatiser la recherche de fichiers sensibles (*.config, *.bak, *.txt)
+- Croiser les résultats enum4linux et smbclient pour repérer des incohérences
+- Tester les credentials trouvés sur d'autres services (recyclage de mots de passe)
+- Scripter l'extraction de fichiers avec smbclient ou smbmap
+
+## 🔗 Pour aller plus loin
+- [PayloadsAllTheThings - SMB](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources/SMB%20Methodology)
+- [HackTricks - SMB](https://book.hacktricks.xyz/pentesting/pentesting-smb)
+- [GTFOBins - smbclient](https://gtfobins.github.io/gtfobins/smbclient/) 

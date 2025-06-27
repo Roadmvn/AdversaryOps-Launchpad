@@ -419,3 +419,41 @@ echo "[+] Results saved in ${TARGET}_snmp_enum/"
 
 ---
 *Cette section couvre l'énumération SNMP complète. Pour l'exploitation des vulnérabilités SNMP, voir la section 02-Exploitation/Réseaux/*
+
+## 🗂️ Workflow d'énumération SNMP
+1. Scan du port 161/UDP (Nmap)
+   ↓
+2. Détection de version et community strings (snmpwalk, onesixtyone, nmap NSE)
+   ↓
+3. Brute force des community strings courantes
+   ↓
+4. Enumération des informations système et réseau (snmpwalk, Metasploit)
+   ↓
+5. Extraction des utilisateurs, processus, services, ARP, routes
+   ↓
+6. Recherche de vulnérabilités et mauvaises configurations
+   ↓
+7. Analyse et corrélation des données extraites
+
+## 🛡️ Conseils OPSEC
+- Ne pas abuser des requêtes SNMP pour éviter d'être détecté.
+- Privilégier les community strings "public" et "private" avant de tester des strings personnalisées.
+- Utiliser des délais entre les requêtes de brute force.
+- Ne jamais modifier la configuration SNMP sans autorisation.
+
+## ⚠️ Erreurs fréquentes
+- Oublier de tester les community strings par défaut
+- Ne pas vérifier les OIDs critiques (sysDescr, sysName, etc.)
+- Lancer des scans trop larges qui saturent le réseau
+- Négliger les informations sur les utilisateurs et processus
+
+## 💡 Astuces
+- Utiliser onesixtyone pour le brute force rapide
+- Croiser les résultats snmpwalk et Metasploit pour plus de détails
+- Scripter l'extraction des OIDs intéressants
+- Automatiser la recherche d'utilisateurs Windows via SNMP
+
+## 🔗 Pour aller plus loin
+- [PayloadsAllTheThings - SNMP](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Methodology%20and%20Resources/SNMP%20Methodology)
+- [HackTricks - SNMP](https://book.hacktricks.xyz/pentesting/pentesting-snmp)
+- [SecLists - Wordlists SNMP](https://github.com/danielmiessler/SecLists/tree/master/Discovery/SNMP)

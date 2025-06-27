@@ -32,7 +32,7 @@ L'ingénierie sociale exploite les faiblesses humaines plutôt que techniques. C
 - **Company_Research.md** - Recherche d'informations entreprise
 - **Employee_Profiling.md** - Profilage des employés
 
-### _Tools/
+### Tools-Reconnaissance/
 - **Gophish.md** - Plateforme de phishing
 - **Social_Engineer_Toolkit.md** - SET Framework
 - **TheHarvester.md** - Collecte d'emails et informations
